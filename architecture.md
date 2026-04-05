@@ -3,25 +3,24 @@
 ```mermaid
 flowchart TD
     subgraph Management ["Management Account"]
-        Org[("AWS Organization\n(o-lux3gv9h3s)")]
-        KMS[KMS Central Key\n(with rotation)]
-        SCP[Service Control Policies]
+        Org["AWS Organization"]
+        KMS["KMS Central Key"]
+        SCP["Service Control Policies"]
     end
 
     subgraph Logging ["Log Archive Account"]
-        S3[(CloudTrail Logs S3 Bucket\nEncrypted with KMS)]
-        CloudTrail[CloudTrail\nOrganization Trail]
+        S3["CloudTrail Logs S3\n(Encrypted with KMS)"]
+        CloudTrail["CloudTrail\nOrganization Trail"]
     end
 
     subgraph Security ["Security Audit Account"]
-        GD[GuardDuty\nDelegated Admin]
-        SH[Security Hub\nDelegated Admin]
+        GD["GuardDuty\nDelegated Admin"]
+        SH["Security Hub\nDelegated Admin"]
     end
 
     subgraph Workloads ["Workloads OU"]
-        App1[Application Account 1]
-        App2[Application Account 2]
-        App3[...]
+        App1["Application Account 1"]
+        App2["Application Account 2"]
     end
 
     Org --> Logging
@@ -32,13 +31,12 @@ flowchart TD
     KMS --> S3
     KMS --> CloudTrail
 
-    GD -.->|Delegated Admin| Org
-    SH -.->|Delegated Admin| Org
+    GD -.-> Org
+    SH -.-> Org
 
-    subgraph VPC ["Baseline Secure VPC\n(ap-southeast-2)"]
-        Private[Private Subnets]
-        Public[Public Subnets + NAT]
-        Flow[Flow Logs\n(Ready to enable)]
+    subgraph VPC ["Baseline Secure VPC"]
+        Private["Private Subnets"]
+        NAT["NAT Gateway"]
     end
 
     classDef mgmt fill:#1e40af,stroke:#60a5fa,color:white
