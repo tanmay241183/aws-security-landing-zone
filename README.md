@@ -4,83 +4,42 @@ A secure, modular **AWS Landing Zone** built manually step-by-step in VS Code us
 
 ## Overview
 
-This project establishes a secure multi-account AWS environment following AWS Well-Architected and Landing Zone best practices.
+This project establishes a secure multi-account AWS environment with:
+- Dedicated **Security** and **Log Archive** accounts
+- Central KMS customer-managed key
+- Organization-wide CloudTrail with encrypted logging
+- Baseline secure VPC
+- GuardDuty + Security Hub foundations
+- SCP guardrails (ready to enable)
 
 **Region**: `ap-southeast-2` (Sydney)
 
-### Key Features
-
-- AWS Organization with dedicated **Security** and **Log Archive** accounts
-- Organizational Units: Security, Logging, Workloads
-- Central **KMS** customer-managed key with rotation
-- **Organization-wide CloudTrail** with encrypted logs in Log Archive account
-- Baseline secure **VPC** (private subnets, NAT gateway)
-- Service Control Policies (SCPs) for governance (ready to enable)
-- Delegated administration for **GuardDuty** and **Security Hub**
-
 ## Architecture
 
-![AWS Security Landing Zone Architecture](architecture.png)
+See **[architecture.md](architecture.md)** for the detailed Mermaid diagram.
 
-## Project Structure
+## Key Components
 
-```bash
-aws-security-landing-zone/
-├── main.tf
-├── variables.tf
-├── terraform.tfvars.example
-├── providers.tf
-├── versions.tf
-├── backend.tf
-├── README.md
-├── .gitignore
-└── modules/
-    ├── organization/
-    ├── security/
-    ├── kms/
-    ├── networking/
-    ├── iam/
-    └── logging/
+- **Organization & OUs**: Security, Logging, Workloads
+- **Logging**: Central encrypted S3 bucket in Log Archive account
+- **Security Services**: GuardDuty and Security Hub (delegated)
+- **Networking**: Private-by-default VPC baseline
+- **Encryption**: All logs encrypted with customer-managed KMS
 
-    Prerequisites
+## Deployment
 
-AWS Management account with AdministratorAccess
-Terraform ≥ 1.9.0
-AWS CLI v2 configured
-Unique email addresses for new accounts (Gmail +tag recommended)
-S3 bucket + DynamoDB (or use_lockfile = true) for remote state
+1. Copy `terraform.tfvars.example` → `terraform.tfvars` and update emails
+2. `terraform init`
+3. `terraform plan`
+4. `terraform apply` (run multiple times as accounts become ACTIVE)
 
-Deployment Steps
+## Next Steps
 
-Copy terraform.tfvars.example → terraform.tfvars and update emails
-terraform init
-terraform plan
-terraform apply (run 2–3 times as accounts become ACTIVE)
+- Re-enable VPC Flow Logs
+- Activate SCP guardrails
+- Set up IAM Identity Center (SSO)
+- Add AWS Config aggregator
 
-Important: New AWS accounts take 5–20 minutes to become ACTIVE.
-What's Included
+---
 
-Centralized encryption with KMS
-Organization CloudTrail + secure logging bucket
-Secure networking baseline
-Foundational security services (GuardDuty, Security Hub)
-SCP guardrails (ready to enable)
-
-Next Steps (Recommended Enhancements)
-
-Enable VPC Flow Logs with proper IAM role
-Activate SCP attachments
-Set up AWS IAM Identity Center (SSO)
-Add AWS Config aggregator + conformance packs
-Implement cross-account IAM roles
-Add Transit Gateway for hub-and-spoke networking
-
-Security Notes
-
-SCPs are currently commented out (safe starting point)
-All logs are encrypted with customer-managed KMS
-Public access is blocked by default
-
-
-Built manually step-by-step in VS Code — April 2026
-Region: ap-southeast-2 (Sydney)
+**Built manually step-by-step in VS Code** — April 2026

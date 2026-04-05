@@ -50,14 +50,3 @@ flowchart TD
     class Logging log
     class Security sec
     class Workloads workload
-
-    Architecture Summary
-
-Management Account: Owns the AWS Organization and central KMS
-Log Archive Account: Stores all CloudTrail logs in encrypted S3 bucket
-Security Account: Acts as delegated administrator for GuardDuty and Security Hub
-Workloads OU: Future application workloads (isolated via SCPs)
-All logs are encrypted using customer-managed KMS key
-Organization-wide CloudTrail enabled
-
-Built with Terraform — April 2026
