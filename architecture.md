@@ -1,0 +1,63 @@
+# AWS Security Landing Zone Architecture
+
+```mermaid
+flowchart TD
+    subgraph Management ["Management Account"]
+        Org[("AWS Organization\n(o-lux3gv9h3s)")]
+        KMS[KMS Central Key\n(with rotation)]
+        SCP[Service Control Policies]
+    end
+
+    subgraph Logging ["Log Archive Account"]
+        S3[(CloudTrail Logs S3 Bucket\nEncrypted with KMS)]
+        CloudTrail[CloudTrail\nOrganization Trail]
+    end
+
+    subgraph Security ["Security Audit Account"]
+        GD[GuardDuty\nDelegated Admin]
+        SH[Security Hub\nDelegated Admin]
+    end
+
+    subgraph Workloads ["Workloads OU"]
+        App1[Application Account 1]
+        App2[Application Account 2]
+        App3[...]
+    end
+
+    Org --> Logging
+    Org --> Security
+    Org --> Workloads
+
+    CloudTrail --> S3
+    KMS --> S3
+    KMS --> CloudTrail
+
+    GD -.->|Delegated Admin| Org
+    SH -.->|Delegated Admin| Org
+
+    subgraph VPC ["Baseline Secure VPC\n(ap-southeast-2)"]
+        Private[Private Subnets]
+        Public[Public Subnets + NAT]
+        Flow[Flow Logs\n(Ready to enable)]
+    end
+
+    classDef mgmt fill:#1e40af,stroke:#60a5fa,color:white
+    classDef log fill:#166534,stroke:#4ade80,color:white
+    classDef sec fill:#991b1b,stroke:#f87171,color:white
+    classDef workload fill:#312e81,stroke:#818cf8,color:white
+
+    class Management mgmt
+    class Logging log
+    class Security sec
+    class Workloads workload
+
+    Architecture Summary
+
+Management Account: Owns the AWS Organization and central KMS
+Log Archive Account: Stores all CloudTrail logs in encrypted S3 bucket
+Security Account: Acts as delegated administrator for GuardDuty and Security Hub
+Workloads OU: Future application workloads (isolated via SCPs)
+All logs are encrypted using customer-managed KMS key
+Organization-wide CloudTrail enabled
+
+Built with Terraform — April 2026
